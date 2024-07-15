@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Contrat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            color: #333;
+        }
+        h1 {
+            color: #007BFF;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .contract-details {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Contrat N°{{ contrat.id }}</h1>
+    
+    <div class="contract-details">
+        <p><strong>Date de début:</strong> {{ contrat.datDebut ? contrat.datDebut|date('Y-m-d H:i:s') : 'N/A' }}</p>
+        <p><strong>Date de fin:</strong> {{ contrat.datFin ? contrat.datFin|date('Y-m-d H:i:s') : 'N/A' }}</p>
+        <p><strong>Nom du client:</strong> {{ contrat.nameClient }}</p>
+        <p><strong>Type:</strong> {{ contrat.type }}</p>
+        {#<p><strong>Montant:</strong> {{ contrat.montant ? contrat.montant|number_format(2, ',', ' ') ~ ' €' : 'N/A' }}</p>#}
+    </div>
+
+    <div class="footer">
+        <p>Ce contrat est généré par notre système. Pour toute question, veuillez contacter notre support.</p>
+    </div>
+</body>
+</html>
