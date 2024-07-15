@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Contrat{% endblock %}
+
+{% block body %}
+<section class="container  mt-5">
+     <div class="row justify-content-center">
+         <div class="col-md-8">   
+          <h1 class="mb-4">Create new contrat for {{ user.email }} </h1>
+           <div class="card">
+                <div class="card-body">
+
+
+    {{ include('admin_contrat/_form.html.twig') }}
+ </div>
+            </div>
+            
+             
+        </div>
+        
+    </div>
+</section>
+{% endblock %}

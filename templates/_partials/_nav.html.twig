@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-commerce</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .navbar-brand {
+            color: #0056b3 !important; /* Couleur de texte professionnelle */
+            font-weight: bold; /* Texte en gras */
+        }
+        .w3-sidebar {
+            display: none; /* Cacher la barre latérale par défaut */
+            position: fixed; /* Position fixe pour ne pas affecter le contenu */
+            width: 200px;
+            right: 0;
+            top: 0;
+            height: 100%; /* Prendre toute la hauteur */
+            overflow-y: auto; /* Ajouter un défilement si nécessaire */
+            background-color: rgba(255, 255, 255, 0.95); /* Fond semi-transparent */
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); /* Ombre pour la barre latérale */
+            z-index: 1000; /* Au-dessus du contenu principal */
+            transition: 0.3s; /* Transition pour une ouverture douce */
+        }
+        .w3-main {
+            position: relative; /* Permet au contenu d'être au-dessus de la barre latérale */
+            z-index: 999; /* Moins que la barre latérale pour s'assurer qu'il est en dessous */
+            margin-right: 0; /* Ajuster l'espace pour la barre latérale */
+            transition: margin-right 0.3s; /* Animation pour le contenu principal */
+        }
+        .w3-main.sidebar-open {
+            margin-right: 200px; /* Espace pour la barre latérale lorsqu'elle est ouverte */
+        }
+        .w3-bar-item {
+            color: #343a40; /* Couleur de texte professionnelle pour les liens */
+            transition: background-color 0.3s, color 0.3s; /* Transitions pour un effet lisse */
+        }
+        .w3-bar-item:hover {
+            background-color: #e9ecef; /* Couleur de fond au survol */
+            color: #0056b3; /* Couleur de texte au survol */
+        }
+        .menu-icon {
+            color: #ffffff !important; /* Couleur de l'icône du menu en blanc */
+        }
+        .w3-teal {
+            background-color: #343a40 !important; /* Couleur de fond professionnelle */
+        }
+        .w3-teal h2 {
+            color: #ffffff; /* Couleur de texte claire pour le titre */
+        }
+    </style>
+</head>
+<body>
+
+<div class="w3-main" id="mainContent">
+  <div class="w3-teal">
+    <button class="w3-button w3-xlarge w3-right menu-icon" onclick="w3_open()">&#9776;</button>
+    <div class="w3-container">
+      <h2>e-commerce</h2>
+    </div>
+  </div>
+
+  <!-- Contenu principal de la page -->
+  <div class="w3-container">
+    {% block body %}{% endblock %}
+  </div>
+</div>
+
+<div class="w3-sidebar w3-bar-block" id="mySidebar">
+  <button class="w3-bar-item w3-button" onclick="w3_close()">Close &times;</button>
+  <a href="{{ path('app_main') }}" class="w3-bar-item w3-button {{ app.request.attributes.get('_route') == 'app_main' ? 'active' : '' }}">Home</a>
+  <a href="{{ path('app_admin_new') }}" class="w3-bar-item w3-button {{ app.request.attributes.get('_route') == 'app_admin_new' ? 'active' : '' }}">Ajouter utilisateur</a>
+  <a href="{{ path('app_admin_index') }}" class="w3-bar-item w3-button {{ app.request.attributes.get('_route') == 'app_admin_index' ? 'active' : '' }}">Rechercher utilisateur</a>
+  {% if app.user %}
+    <a href="{{ path('app_admin_contrat_index', {'userId': app.user.id}) }}" class="w3-bar-item w3-button {{ app.request.attributes.get('_route') == 'app_admin_contrat_index' ? 'active' : '' }}">Rechercher contrat</a>
+    <a href="{{ path('app_admin_contrat_new', {'email': app.user.email}) }}" class="w3-bar-item w3-button {{ app.request.attributes.get('_route') == 'app_admin_contrat_new' ? 'active' : '' }}">Ajouter contrat</a>
+  {% endif %}
+  <hr>
+  {% if app.user %}
+    <a href="#" class="w3-bar-item w3-button">Mon compte</a>
+    <a href="{{ path('app_logout') }}" class="w3-bar-item w3-button">Me déconnecter</a>
+  {% else %}
+    <a href="{{ path('app_register') }}" class="w3-bar-item w3-button">M'inscrire</a>
+    <a href="{{ path('app_login') }}" class="w3-bar-item w3-button">Me connecter</a>
+  {% endif %}
+</div>
+
+<script>
+function w3_open() {
+  document.getElementById("mySidebar").style.display = "block";
+  document.getElementById("mainContent").classList.add("sidebar-open"); // Ajouter une classe pour le contenu principal
+}
+
+function w3_close() {
+  document.getElementById("mySidebar").style.display = "none";
+  document.getElementById("mainContent").classList.remove("sidebar-open"); // Retirer la classe pour le contenu principal
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

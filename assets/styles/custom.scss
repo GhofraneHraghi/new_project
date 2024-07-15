@@ -1,0 +1,9 @@
+:root {
+    --main-bg-color: coral;
+    --font-family-sans-serif: system-ui, -apple-system, "Segoe UI";
+}
+
+body {
+    background-color: var(--main-bg-color);
+    font-family: var(--font-family-sans-serif);
+}

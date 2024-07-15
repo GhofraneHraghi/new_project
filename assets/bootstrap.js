@@ -1,5 +1,10 @@
-import { startStimulusApp } from '@symfony/stimulus-bundle';
+import { Application } from '@hotwired/stimulus';
 
-const app = startStimulusApp();
-// register any custom, 3rd party controllers here
-// app.register('some_controller_name', SomeImportedController);
+// Expose jQuery for Bootstrap plugins (optional)
+const $ = require('jquery');
+global.$ = global.jQuery = $;
+
+const application = Application.start();
+
+// Register any custom, 3rd party controllers here
+// Will be loaded asynchronously

@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h6>Recherche d'utilisateurs</h6>
+        <form method="get" action="{{ path('app_admin_index') }}">
+            <div class="input-group mb-3">
+                <input type="text" name="search" id="search-input" class="form-control" placeholder="Rechercher par email" aria-label="Rechercher par email">
+                <button class="btn btn-primary" type="submit">Rechercher</button>
+                <span id="clear-search" class="input-group-text" style="display:none; cursor:pointer;">&times;</span>
+            </div>
+        </form>
+
+        <h1>Liste d'utilisateurs</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Lastname</th>
+                    <th>Firstname</th>
+                    <th>Adress</th>
+                    <th>Created_at</th>
+                    <th>zip_code</th>
+                    <th>City</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                    <td>{{ user.lastname }}</td>
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.adress }}</td>
+                    <td>{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ user.zipcode }}</td>
+                    <td>{{ user.city }}</td>
+                    <td>
+                        <a href="{{ path('app_admin_show', {'id': user.id}) }}" class="btn btn-primary btn-sm">show</a>
+                        <a href="{{ path('app_admin_edit', {'id': user.id}) }}" class="btn btn-primary btn-sm">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="10">No records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_admin_new') }}" class="btn btn-secondary">Create new</a>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const clearSearch = document.getElementById('clear-search');
+
+            searchInput.addEventListener('input', function() {
+                clearSearch.style.display = this.value.length > 0 ? 'inline-block' : 'none';
+            });
+
+            clearSearch.addEventListener('click', function() {
+                searchInput.value = '';
+                clearSearch.style.display = 'none';
+                searchInput.focus();
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contrat index{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h6>Recherche de contrats</h6>
+        <div class="input-group mb-3">
+            <input type="text" id="search-input" class="form-control" placeholder="Rechercher par email utilisateur" aria-label="Rechercher par email utilisateur">
+            <button class="btn btn-primary" type="button" onclick="performSearch()">Rechercher</button>
+            <span id="clear-search" class="input-group-text" style="display:none; cursor:pointer;">&times;</span>
+        </div>
+        <h1>Listes des contrats d'un user</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Nom client</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for contrat in contrats %}
+                <tr>
+                    <td>{{ contrat.id }}</td>
+                    <td>{{ contrat.datDebut ? contrat.datDebut|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ contrat.datFin ? contrat.datFin|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ contrat.nameClient }}</td>
+                    <td>{{ contrat.type }}</td>
+                    <td>
+                        <a href="{{ path('app_admin_contrat_edit', {'id': contrat.id}) }}" class="btn btn-primary btn-sm">edit</a>
+                        <a href="{{ path('app_admin_contrat_show', {'id': contrat.id}) }}" class="btn btn-primary btn-sm">show</a>
+                        {{ include('admin_contrat/_delete_form.html.twig', {'id': contrat.id}) }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_admin_contrat_new', {'email': user.email}) }}" class="btn btn-secondary">Create new</a>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function performSearch() {
+            const searchInput = document.getElementById('search-input').value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('search', searchInput);
+            window.location.href = url.toString();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const clearSearch = document.getElementById('clear-search');
+
+            searchInput.addEventListener('input', function() {
+                clearSearch.style.display = this.value.length > 0 ? 'inline-block' : 'none';
+            });
+
+            clearSearch.addEventListener('click', function() {
+                searchInput.value = '';
+                clearSearch.style.display = 'none';
+                searchInput.focus();
+            });
+        });
+    </script>
+{% endblock %}
