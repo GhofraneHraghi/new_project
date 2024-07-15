@@ -131,4 +131,8 @@ class AdminContratController extends AbstractController
     //]);
 //}
 
+public function test (){
+    return true;
+}
+
 }
