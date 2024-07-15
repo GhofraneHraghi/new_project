@@ -1,4 +1,4 @@
-<?php
+<?php 
 namespace App\Controller;
 
 use App\Entity\Contrat;
@@ -11,28 +11,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 #[Route('/contrat')]
 class AdminContratController extends AbstractController
 {
     #[Route('/{userId}', name: 'app_admin_contrat_index', methods: ['GET'])]
-    public function index(Request $request,int $userId, UserRepository $userRepository, ContratRepository $contratRepository): Response
-    {      // Récupérer le paramètre de recherche
-        $search = $request->query->get('search');
-            // Chercher les contrats en fonction de l'email, ou tous si aucun paramètre n'est donné
-    $contrats = $contratRepository->findByUserEmail($search);
-        // Trouver l'utilisateur par son identifiant
+    public function index(Request $request, int $userId, UserRepository $userRepository, ContratRepository $contratRepository): Response
+    {
+        $searchType = $request->query->get('type');
+
         $user = $userRepository->find($userId);
-        
-        // Vérifier si l'utilisateur existe
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
         }
 
-        // Récupérer les contrats de l'utilisateur
-        $contracts = $contratRepository->findBy(['user' => $user]);
+        $contracts = $searchType
+            ? $contratRepository->findByTypeAndUser($searchType, $user)
+            : $contratRepository->findBy(['user' => $user]);
 
-        // Rendre la vue avec les contrats et l'utilisateur
         return $this->render('admin_contrat/index.html.twig', [
             'user' => $user,
             'contrats' => $contracts,
@@ -56,7 +54,7 @@ class AdminContratController extends AbstractController
             $em->persist($contrat);
             $em->flush();
 
-            return $this->redirectToRoute('app_admin_contrat_show', ['email' => $user->getEmail()]);
+            return $this->redirectToRoute('app_admin_contrat_show', ['id' => $contrat->getId()]);
         }
 
         return $this->render('admin_contrat/new.html.twig', [
@@ -69,24 +67,19 @@ class AdminContratController extends AbstractController
     #[Route('/show/{id}', name: 'app_admin_contrat_show', methods: ['GET'])]
     public function show(int $id, ContratRepository $contratRepository): Response
     {
-        // Trouver le contrat par son identifiant
         $contrat = $contratRepository->find($id);
-        
-        // Vérifier si le contrat existe
         if (!$contrat) {
             throw $this->createNotFoundException('Contrat non trouvé');
         }
-        
-        // Récupérer l'utilisateur associé au contrat
+
         $user = $contrat->getUser();
-    
-        // Rendre la vue avec le contrat et l'utilisateur
+
         return $this->render('admin_contrat/show.html.twig', [
             'contrat' => $contrat,
             'user' => $user,
         ]);
     }
-    
+
     #[Route('/edit/{id}', name: 'app_admin_contrat_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Contrat $contrat, EntityManagerInterface $entityManager): Response
     {
@@ -97,7 +90,7 @@ class AdminContratController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_admin_contrat_show', ['email' => $user->getEmail()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_contrat_show', ['id' => $contrat->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin_contrat/edit.html.twig', [
@@ -110,29 +103,38 @@ class AdminContratController extends AbstractController
     #[Route('/delete/{id}', name: 'app_admin_contrat_delete', methods: ['POST'])]
     public function delete(Request $request, Contrat $contrat, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$contrat->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $contrat->getId(), $request->request->get('_token'))) {
             $entityManager->remove($contrat);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_admin_contrat_index', [], Response::HTTP_SEE_OTHER);
     }
-    //public function someAction()
-//{
-    // Récupérez les valeurs nécessaires depuis la base de données ou autre logique
-   // $someUserId = 1;
-    //$someUserEmail = 'user@example.com';
-    //$someContratId = 1;
 
-    //return $this->render('some_template.html.twig', [
-      //  'someUserId' => $someUserId,
-        //'someUserEmail' => $someUserEmail,
-        //'someContratId' => $someContratId,
-    //]);
-//}
+    #[Route('/{id}/pdf', name: 'app_admin_contrat_pdf', methods: ['GET'])]
+    public function pdf(int $id, ContratRepository $contratRepository): Response
+    {
+        $contrat = $contratRepository->find($id);
+        if (!$contrat) {
+            throw $this->createNotFoundException('Contrat non trouvé');
+        }
 
-public function test (){
-    return true;
-}
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
 
+        $dompdf = new Dompdf($pdfOptions);
+
+        $html = $this->renderView('admin_contrat/pdf.html.twig', [
+            'contrat' => $contrat,
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="contrat.pdf"',
+        ]);
+    }
 }
