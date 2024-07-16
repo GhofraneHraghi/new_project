@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\Contrat;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
+use App\Entity\User;
 /**
  * @extends ServiceEntityRepository<Contrat>
  */
@@ -42,17 +42,20 @@ class ContratRepository extends ServiceEntityRepository
     //    }
     // src/Repository/ContratRepository.php
 
-    public function findByUserEmail(?string $email): array
-    {
-        $qb = $this->createQueryBuilder('c');
-    
-        if ($email) {
-            $qb->innerJoin('c.user', 'u') // Assurez-vous que c.user est bien le bon champ de relation
-               ->andWhere('u.email LIKE :email')
-               ->setParameter('email', '%' . $email . '%');
-        }
-    
-        return $qb->getQuery()->getResult();
-    }
+// src/Repository/ContratRepository.php
+// src/Repository/ContratRepository.php
+// src/Repository/ContratRepository.php
+
+public function findByTypeAndUser(string $type, User $user)
+{
+    return $this->createQueryBuilder('c')
+        ->andWhere('c.type LIKE :type')
+        ->andWhere('c.user = :user')
+        ->setParameter('type', '%' . $type . '%')
+        ->setParameter('user', $user)
+        ->getQuery()
+        ->getResult();
+}
+
     
 }
